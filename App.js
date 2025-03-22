@@ -8,6 +8,7 @@ let timer = null;
 let ss = 0;
 let mm = 0;
 let hh = 0;
+const intervaloTempo = 1000; // base de tempo pro cronometro
 
 
 
@@ -73,7 +74,7 @@ function App() {
 
         setNumero(format);
 
-      }, 100); // chamar a função a cada 100ms
+      }, intervaloTempo); // chamar a função a cada 100ms
 
       setBotao('PARAR');
     }
