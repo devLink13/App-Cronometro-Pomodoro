@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, TextInput, Alert } from 'react-native';
 
 import * as Notifications from 'expo-notifications';
 
@@ -107,8 +107,40 @@ function App() {
     if (isNaN(pomodoro) || pomodoro > 60 || pomodoro <= 0) {
       alert('Tempo Inválido.');
     } else {
-      setPomodoro(pomodoro);
-      setPomoOn(true);
+
+      Alert.alert(
+        'Confirmar Pomodoro',
+        `Voce deseja iniciar um pomodoro de ${pomodoro} minutos?`,
+        [
+          {
+            text: 'Sim',
+            onPress: () => {
+              console.log('pomodoro confirmado.');
+              setPomodoro(pomodoro);
+              setPomoOn(true);
+            }
+          },
+          {
+            text: 'Zerar e iniciar',
+            onPress: () => {
+              limpar();
+              vai();
+              setPomoOn(true);
+              setPomodoro(pomodoro);
+
+            },
+            style: 'default'
+          },
+          {
+            text: 'Cancelar',
+            onPress: () => {
+              console.log('pomodoro cancelado');
+              return;
+            }
+          }
+
+        ]
+      )
     }
   }
 
@@ -140,7 +172,42 @@ function App() {
 
   }, [numero]);
 
+  function cancelarPomodoro() {
+    Alert.alert(
+      'Cancelar Pomodoro',
+      `Voce deseja o pomodoro atual?`,
+      [
+        {
+          text: 'Zerar e Cancelar',
+          onPress: () => {
+            console.log('pomodoro cancelado e zerado.');
+            limpar(); // zera o timer
+            setPomodoro(0); // zera o pomodoro
+            setPomoOn(false); // sinaliza desligamento do pomodoro
+          }
+        },
+        {
+          text: 'Sim',
+          onPress: () => {
+            console.log('pomodoro cancelado.');
+            setPomodoro(0);
+            setPomoOn(false);
+            vai(); // chamar a funcao vai com o cronometro em funcionamento pausa ele
 
+          },
+          style: 'default'
+        },
+        {
+          text: 'Cancelar',
+          onPress: () => {
+            console.log('voltou atras no cancelamento');
+            return;
+          }
+        }
+
+      ]
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -150,14 +217,12 @@ function App() {
           pomoOn // SE O POMO ESTIVER OFF APARECE O VALOR DO POMODORO NA TELA, SE NÃO ENTÃO MOSTRA O INPUT DE SELECIONAR
             ? (
               <>
-                <Text style={{ fontSize: 20, textAlign: 'center', color: 'green' }}>POMODORO ATIVADO PARA {pomodoro} MINUTOS.</Text>
+                <Text style={{ fontSize: 20, textAlign: 'center', color: 'green', fontWeight: 'bold' }}>POMODORO ATIVADO PARA {pomodoro} MINUTOS.</Text>
                 <TouchableOpacity
                   style={styles.btnCancelar}
 
-                  onPress={() => {
-                    setPomoOn(false);
-                    setPomodoro(0);
-                  }}
+                  onPress={cancelarPomodoro}
+
                 >
                   <Text style={styles.btnCancelarTxt}>CANCELAR</Text>
                 </TouchableOpacity>
@@ -249,7 +314,7 @@ const styles = StyleSheet.create({
   },
 
   inputTime: {
-    width: '80%',
+    width: '60%',
     height: 60,
     marginBottom: 100,
     borderWidth: 1,
